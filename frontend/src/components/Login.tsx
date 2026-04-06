@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Mail, ArrowRight, Activity } from 'lucide-react';
+import { Lock, Mail, ArrowRight, Activity, ShieldCheck } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -39,77 +39,110 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background">
-      {/* Background decorations */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/20 blur-[120px]"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-accent/20 blur-[120px]"></div>
-
-      <div className="w-full max-w-md p-8 relative z-10">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-panelHighlight border border-white/10 mb-6 shadow-2xl">
-            <Activity className="w-8 h-8 text-primary" />
+    <div className="min-h-screen flex bg-background">
+      
+      {/* Left side: Premium Branding (hidden on mobile) */}
+      <div className="hidden lg:flex w-1/2 relative bg-panel flex-col justify-between p-12 overflow-hidden border-r border-white/5">
+        <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] rounded-full bg-primary/20 blur-[150px] pointer-events-none"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-accent/20 blur-[150px] pointer-events-none"></div>
+        
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-16">
+             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-white shadow-[0_0_20px_rgba(124,58,237,0.3)]">
+               <Activity className="w-5 h-5 text-white" />
+             </div>
+             <span className="text-xl font-bold text-white tracking-tight">Socials<span className="text-primary">Control</span></span>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">Socials Control</h1>
-          <p className="text-slate-400">BY TAMPATEKS</p>
+
+          <h2 className="text-5xl font-bold text-white leading-tight mb-6">
+            Multi-Tenant <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Social Media</span><br/> Orchestration.
+          </h2>
+          <p className="text-lg text-slate-400 max-w-md font-light leading-relaxed">
+            Manage brands, automate posts, and centralize the Metricool API for all your organizational tenants seamlessly.
+          </p>
         </div>
 
-        <div className="glass-panel p-8">
-          <form onSubmit={handleLogin} className="space-y-6">
-            {error && (
-              <div className="bg-danger/10 border border-danger/20 text-danger px-4 py-3 rounded-lg text-sm">
-                {error}
-              </div>
-            )}
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300 ml-1">Email Address</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-slate-500" />
+        <div className="relative z-10 flex items-center gap-4 text-sm text-slate-500 font-medium">
+          <ShieldCheck className="w-5 h-5 text-accent" />
+          Secure Enterprise Authentication
+        </div>
+      </div>
+
+      {/* Right side: Login Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 relative">
+        <div className="w-full max-w-md">
+          
+          <div className="text-center lg:text-left mb-10">
+            <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">Welcome Back</h1>
+            <p className="text-slate-400">Sign in to your administration panel.</p>
+          </div>
+
+          <div className="glass-panel p-8 sm:p-10 !border-white/5 shadow-2xl">
+            <form onSubmit={handleLogin} className="space-y-6">
+              {error && (
+                <div className="bg-danger/10 border border-danger/20 text-danger px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-danger"></div>
+                  {error}
                 </div>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="input-field !pl-11"
-                  placeholder="admin@tampateks.com"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300 ml-1">Password</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-slate-500" />
+              )}
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300 ml-1">Email Address</label>
+                <div className="flex items-center bg-white/5 border border-white/10 rounded-lg focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary transition-all overflow-hidden group">
+                  <div className="pl-4 pr-3 py-3 text-slate-500 group-focus-within:text-primary transition-colors">
+                    <Mail className="h-5 w-5" />
+                  </div>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-transparent text-white placeholder-slate-500 py-3 pr-4 focus:outline-none"
+                    placeholder="admin@tampateks.com"
+                    required
+                  />
                 </div>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="input-field !pl-11"
-                  placeholder="••••••••"
-                  required
-                />
               </div>
-            </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary mt-8 group"
-            >
-              {loading ? 'Authenticating...' : 'Sign In'}
-              {!loading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
-            </button>
-          </form>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between ml-1">
+                  <label className="text-sm font-medium text-slate-300">Password</label>
+                </div>
+                <div className="flex items-center bg-white/5 border border-white/10 rounded-lg focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary transition-all overflow-hidden group">
+                  <div className="pl-4 pr-3 py-3 text-slate-500 group-focus-within:text-primary transition-colors">
+                    <Lock className="h-5 w-5" />
+                  </div>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-transparent text-white placeholder-slate-500 py-3 pr-4 focus:outline-none tracking-widest"
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
+              </div>
 
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-primary mt-8 group h-12 text-base font-semibold shadow-[0_0_20px_rgba(124,58,237,0.2)] hover:shadow-[0_0_25px_rgba(124,58,237,0.4)]"
+              >
+                {loading ? 'Authenticating...' : 'Sign In'}
+                {!loading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
+              </button>
+            </form>
+          </div>
+          
+          <div className="mt-10 text-center">
+             <p className="text-xs font-medium text-slate-600 uppercase tracking-widest">Powered by Tampateks</p>
+          </div>
 
         </div>
       </div>
+      
     </div>
   );
 };
 
 export default Login;
+

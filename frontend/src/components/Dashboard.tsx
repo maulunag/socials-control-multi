@@ -10,6 +10,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('overview');
+  const [userFilterCompanyId, setUserFilterCompanyId] = useState<number | null>(null);
   
   const [metricoolModalCompany, setMetricoolModalCompany] = useState<any>(null);
 
@@ -31,8 +32,19 @@ const Dashboard = () => {
       setMetricoolModalCompany(customEvent.detail);
     };
 
+    const handleNavigateUsers = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      setUserFilterCompanyId(customEvent.detail);
+      setActiveTab('users');
+    };
+
     window.addEventListener('OPEN_METRICOOL_SETTINGS', handleOpenSettings);
-    return () => window.removeEventListener('OPEN_METRICOOL_SETTINGS', handleOpenSettings);
+    window.addEventListener('NAVIGATE_TO_USERS', handleNavigateUsers);
+    
+    return () => {
+      window.removeEventListener('OPEN_METRICOOL_SETTINGS', handleOpenSettings);
+      window.removeEventListener('NAVIGATE_TO_USERS', handleNavigateUsers);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -70,7 +82,10 @@ const Dashboard = () => {
           
           {(user.role === 'SUPERADMIN' || user.role === 'ADMIN') && (
             <button 
-              onClick={() => setActiveTab('users')}
+              onClick={() => {
+                setActiveTab('users');
+                setUserFilterCompanyId(null);
+              }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors ${activeTab === 'users' ? 'bg-primary/10 text-primary border border-primary/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
               <Users className="w-5 h-5" />
               User Management
@@ -110,12 +125,27 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
         <header className="h-16 flex items-center justify-between px-8 border-b border-white/5 glass-panel rounded-none flex-shrink-0">
-          <h2 className="text-xl font-medium text-white">
-            {activeTab === 'overview' && `Welcome back, ${user.name}`}
-            {activeTab === 'companies' && 'Companies'}
-            {activeTab === 'users' && 'Users'}
-            {activeTab === 'settings' && 'Settings'}
-          </h2>
+          <div className="text-xl font-medium text-white flex items-center gap-3">
+            {activeTab === 'overview' && (
+              <>
+                 <span>Welcome back, <span className="font-bold">{user.name}</span></span>
+                 {user.role !== 'SUPERADMIN' ? (
+                   <span className="px-4 py-1.5 ml-2 bg-gradient-to-r from-primary/20 to-primary/10 text-primary border border-primary/30 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(124,58,237,0.3)] flex items-center gap-2">
+                     <Building2 className="w-4 h-4" />
+                     {user.company_name || 'Organization Workspace'}
+                   </span>
+                 ) : (
+                   <span className="px-4 py-1.5 ml-2 bg-gradient-to-r from-danger/20 to-danger/10 text-danger border border-danger/30 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(239,68,68,0.2)] flex items-center gap-2">
+                     <Activity className="w-4 h-4" />
+                     Superadmin Portal
+                   </span>
+                 )}
+              </>
+            )}
+            {activeTab === 'companies' && 'Organizations Directory'}
+            {activeTab === 'users' && 'User Management'}
+            {activeTab === 'settings' && 'Global Configurations'}
+          </div>
           <div className="flex items-center gap-4">
             <span className="px-3 py-1 bg-accent/10 border border-accent/20 text-accent rounded-full text-xs font-semibold tracking-wide flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
@@ -163,7 +193,7 @@ const Dashboard = () => {
 
           {activeTab === 'companies' && <CompaniesManager />}
 
-          {activeTab === 'users' && <UsersManager />}
+          {activeTab === 'users' && <UsersManager companyFilter={userFilterCompanyId} onClearFilter={() => setUserFilterCompanyId(null)} />}
 
           {activeTab === 'settings' && <GlobalSettings />}
 

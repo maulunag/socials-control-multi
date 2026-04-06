@@ -19,7 +19,7 @@ if (!empty($data->email) && !empty($data->password)) {
     $password = $data->password;
 
     try {
-        $stmt = $pdo->prepare("SELECT id, company_id, role, name, email, password_hash FROM users WHERE email = ? LIMIT 1");
+        $stmt = $pdo->prepare("SELECT u.id, u.company_id, u.role, u.name, u.email, u.password_hash, c.name as company_name FROM users u LEFT JOIN companies c ON u.company_id = c.id WHERE u.email = ? LIMIT 1");
         $stmt->execute([$email]);
         $user = $stmt->fetch();
 
@@ -45,7 +45,8 @@ if (!empty($data->email) && !empty($data->password)) {
                     "name" => $user['name'],
                     "email" => $user['email'],
                     "role" => $user['role'],
-                    "company_id" => $user['company_id']
+                    "company_id" => $user['company_id'],
+                    "company_name" => $user['company_name']
                 ]
             ));
         } else {

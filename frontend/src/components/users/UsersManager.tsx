@@ -17,7 +17,7 @@ interface Company {
   name: string;
 }
 
-export default function UsersManager() {
+export default function UsersManager({ companyFilter, onClearFilter }: { companyFilter?: number | null, onClearFilter?: () => void }) {
   const [users, setUsers] = useState<SystemUser[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
@@ -120,11 +120,27 @@ export default function UsersManager() {
     return <User className="w-4 h-4 text-blue-400" />;
   };
 
+  const filteredUsers = companyFilter 
+    ? users.filter(u => u.company_id === companyFilter)
+    : users;
+
+  const currentFilteredCompany = companyFilter 
+    ? companies.find(c => c.id === companyFilter)
+    : null;
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-2xl font-bold text-white mb-1">User Management</h3>
+          <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
+             User Management
+             {currentFilteredCompany && (
+                <span className="text-xs font-semibold px-2 py-1 bg-primary/20 text-primary border border-primary/30 rounded-full flex items-center gap-2">
+                   Filtered by: {currentFilteredCompany.name}
+                   <button onClick={onClearFilter} className="hover:text-white"><X className="w-3 h-3"/></button>
+                </span>
+             )}
+          </h3>
           <p className="text-slate-400">Control access and roles across the platform</p>
         </div>
         <button 
@@ -154,11 +170,13 @@ export default function UsersManager() {
                 <tr>
                   <td colSpan={isSuperAdmin ? 4 : 3} className="px-6 py-8 text-center text-slate-400">Loading users...</td>
                 </tr>
-              ) : users.length === 0 ? (
+              ) : filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={isSuperAdmin ? 4 : 3} className="px-6 py-8 text-center text-slate-400">No users found.</td>
+                  <td colSpan={isSuperAdmin ? 4 : 3} className="px-6 py-8 text-center text-slate-400">
+                     {companyFilter ? 'No users found for this company.' : 'No users found.'}
+                  </td>
                 </tr>
-              ) : users.map(user => (
+              ) : filteredUsers.map(user => (
                 <tr key={user.id} className="hover:bg-white/5 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">

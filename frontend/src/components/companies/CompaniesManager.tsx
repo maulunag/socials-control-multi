@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Building2, Plus, Edit2, Trash2, Settings2, X } from 'lucide-react';
+import { Building2, Plus, Edit2, Trash2, Settings2, X, Users } from 'lucide-react';
 import { fetchWithAuth } from '../../utils/api';
 
 interface Company {
@@ -126,13 +126,20 @@ export default function CompaniesManager() {
               <h4 className="text-xl font-bold text-white mb-2">{company.name}</h4>
               <p className="text-sm text-slate-400 mb-4">{company.user_count} User{company.user_count !== 1 && 's'}</p>
               
-              <div className="mt-auto pt-4 border-t border-white/5">
+              <div className="mt-auto pt-4 border-t border-white/5 space-y-2">
                 <button 
                   onClick={() => window.dispatchEvent(new CustomEvent('OPEN_METRICOOL_SETTINGS', { detail: company }))}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2 text-primary hover:bg-primary/10 border border-primary/20 rounded-lg text-sm font-medium transition-colors"
                 >
                   <Settings2 className="w-4 h-4" />
                   Metricool API
+                </button>
+                <button 
+                  onClick={() => window.dispatchEvent(new CustomEvent('NAVIGATE_TO_USERS', { detail: company.id }))}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 text-slate-300 hover:text-white hover:bg-white/5 border border-white/10 rounded-lg text-sm font-medium transition-colors"
+                >
+                  <Users className="w-4 h-4" />
+                  Manage Users
                 </button>
               </div>
             </div>
