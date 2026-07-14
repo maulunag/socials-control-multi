@@ -1,16 +1,24 @@
 <?php
 /**
  * Database Connection
- * 
- * MySQL PDO connection for the TampaTeks Voice Call system.
- * Update the credentials below to match your environment.
+ *
+ * MySQL PDO connection for the TampaTeks Socials Control system.
+ * Credentials are loaded from backend/.env (never committed to git).
  */
 
-$db_host = 'localhost';
-$db_name = 'tampatek_socials_control_multi_db';
-$db_user = 'tampatek_socials_control_multi_user';         // EDIT: your MySQL username
-$db_pass = '..tampateks--';             // EDIT: your MySQL password
-$db_charset = 'utf8mb4';
+$_envPath = __DIR__ . '/.env';
+if (!file_exists($_envPath)) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Missing .env file in backend/']);
+    exit;
+}
+$_env = parse_ini_file($_envPath);
+
+$db_host    = $_env['DB_HOST']    ?? 'localhost';
+$db_name    = $_env['DB_NAME']    ?? '';
+$db_user    = $_env['DB_USER']    ?? '';
+$db_pass    = $_env['DB_PASS']    ?? '';
+$db_charset = $_env['DB_CHARSET'] ?? 'utf8mb4';
 
 try {
     $dsn = "mysql:host={$db_host};dbname={$db_name};charset={$db_charset}";
