@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Building2, Plus, Edit2, Trash2, Settings2, X, Users } from 'lucide-react';
+import { Building2, Plus, Edit2, Trash2, Settings2, X, Users, Sparkles } from 'lucide-react';
 import { fetchWithAuth } from '../../utils/api';
 
 interface Company {
@@ -129,10 +129,17 @@ export default function CompaniesManager() {
               <div className="mt-auto pt-4 border-t border-white/5 space-y-2">
                 <button 
                   onClick={() => window.dispatchEvent(new CustomEvent('OPEN_METRICOOL_SETTINGS', { detail: company }))}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2 text-primary hover:bg-primary/10 border border-primary/20 rounded-lg text-sm font-medium transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 text-accent hover:bg-accent/10 border border-accent/20 rounded-lg text-sm font-medium transition-colors"
                 >
                   <Settings2 className="w-4 h-4" />
                   Metricool API
+                </button>
+                <button 
+                  onClick={() => window.dispatchEvent(new CustomEvent('OPEN_IA_SETTINGS', { detail: company }))}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 text-primary hover:bg-primary/10 border border-primary/20 rounded-lg text-sm font-medium transition-colors"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  IA Engine API
                 </button>
                 <button 
                   onClick={() => window.dispatchEvent(new CustomEvent('NAVIGATE_TO_USERS', { detail: company.id }))}

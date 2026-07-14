@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, LayoutDashboard, Settings, Users, Building2, Activity } from 'lucide-react';
+import { LogOut, LayoutDashboard, Settings, Users, Building2, Activity, Zap, Lightbulb, FileText } from 'lucide-react';
 import CompaniesManager from './companies/CompaniesManager';
 import UsersManager from './users/UsersManager';
 import GlobalSettings from './settings/GlobalSettings';
 import MetricoolSettingsManager from './settings/MetricoolSettingsManager';
+import IASettingsManager from './settings/IASettingsManager';
+import TopicsManager from './topics/TopicsManager';
+import AutomationsManager from './automations/AutomationsManager';
+import ContentManager from './content/ContentManager';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -13,6 +17,7 @@ const Dashboard = () => {
   const [userFilterCompanyId, setUserFilterCompanyId] = useState<number | null>(null);
   
   const [metricoolModalCompany, setMetricoolModalCompany] = useState<any>(null);
+  const [iaModalCompany, setIaModalCompany] = useState<any>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -32,6 +37,15 @@ const Dashboard = () => {
       setMetricoolModalCompany(customEvent.detail);
     };
 
+    const handleOpenIASettings = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      setIaModalCompany(customEvent.detail);
+    };
+
+    const handleNavigateContent = () => {
+      setActiveTab('content');
+    };
+
     const handleNavigateUsers = (e: Event) => {
       const customEvent = e as CustomEvent;
       setUserFilterCompanyId(customEvent.detail);
@@ -39,11 +53,15 @@ const Dashboard = () => {
     };
 
     window.addEventListener('OPEN_METRICOOL_SETTINGS', handleOpenSettings);
+    window.addEventListener('OPEN_IA_SETTINGS', handleOpenIASettings);
     window.addEventListener('NAVIGATE_TO_USERS', handleNavigateUsers);
+    window.addEventListener('NAVIGATE_TO_CONTENT_IA', handleNavigateContent);
     
     return () => {
       window.removeEventListener('OPEN_METRICOOL_SETTINGS', handleOpenSettings);
+      window.removeEventListener('OPEN_IA_SETTINGS', handleOpenIASettings);
       window.removeEventListener('NAVIGATE_TO_USERS', handleNavigateUsers);
+      window.removeEventListener('NAVIGATE_TO_CONTENT_IA', handleNavigateContent);
     };
   }, []);
 
@@ -69,6 +87,42 @@ const Dashboard = () => {
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors ${activeTab === 'overview' ? 'bg-primary/10 text-primary border border-primary/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
             <LayoutDashboard className="w-5 h-5" />
             Overview
+          </button>
+          
+          <button 
+            onClick={() => {
+              setActiveTab('topics');
+              setUserFilterCompanyId(null);
+            }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all ${activeTab === 'topics' ? 'bg-primary/10 text-primary border border-primary/20 shadow-[0_0_15px_rgba(124,58,237,0.15)]' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+            <Lightbulb className={`w-5 h-5 ${activeTab === 'topics' ? 'text-primary' : 'text-slate-400'}`} />
+            Gen Topics
+            <span className="ml-auto text-[9px] font-bold uppercase tracking-wider bg-primary/20 text-primary px-2 py-0.5 rounded-sm border border-primary/30 shadow-[0_0_10px_rgba(124,58,237,0.3)]">Ideas</span>
+          </button>
+          
+          <button 
+            onClick={() => {
+              setActiveTab('automations');
+              setUserFilterCompanyId(null);
+            }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all group ${activeTab === 'automations' ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/10 text-amber-400 border border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+            <div className={`p-1 rounded-md ${activeTab === 'automations' ? 'bg-amber-500/20' : 'bg-white/5 group-hover:bg-amber-500/20 group-hover:text-amber-400 transition-colors'}`}>
+               <Zap className="w-4 h-4" />
+            </div>
+            Automations
+            <span className="ml-auto text-[9px] font-bold uppercase tracking-wider bg-amber-500 text-black px-2 py-0.5 rounded-sm shadow-[0_0_10px_rgba(245,158,11,0.5)]">New</span>
+          </button>
+
+          <button 
+            onClick={() => {
+              setActiveTab('content');
+              setUserFilterCompanyId(null);
+            }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all group ${activeTab === 'content' ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/10 text-emerald-400 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+            <div className={`p-1 rounded-md ${activeTab === 'content' ? 'bg-emerald-500/20' : 'bg-white/5 group-hover:bg-emerald-500/20 group-hover:text-emerald-400 transition-colors'}`}>
+               <FileText className="w-4 h-4" />
+            </div>
+            Content IA
           </button>
           
           {user.role === 'SUPERADMIN' && (
@@ -126,27 +180,26 @@ const Dashboard = () => {
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
         <header className="h-16 flex items-center justify-between px-8 border-b border-white/5 glass-panel rounded-none flex-shrink-0">
           <div className="text-xl font-medium text-white flex items-center gap-3">
-            {activeTab === 'overview' && (
-              <>
-                 <span>Welcome back, <span className="font-bold">{user.name}</span></span>
-                 {user.role !== 'SUPERADMIN' ? (
-                   <span className="px-4 py-1.5 ml-2 bg-gradient-to-r from-primary/20 to-primary/10 text-primary border border-primary/30 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(124,58,237,0.3)] flex items-center gap-2">
-                     <Building2 className="w-4 h-4" />
-                     {user.company_name || 'Organization Workspace'}
-                   </span>
-                 ) : (
-                   <span className="px-4 py-1.5 ml-2 bg-gradient-to-r from-danger/20 to-danger/10 text-danger border border-danger/30 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(239,68,68,0.2)] flex items-center gap-2">
-                     <Activity className="w-4 h-4" />
-                     Superadmin Portal
-                   </span>
-                 )}
-              </>
-            )}
+            {activeTab === 'overview' && <span>Welcome back, <span className="font-bold">{user.name}</span></span>}
             {activeTab === 'companies' && 'Organizations Directory'}
             {activeTab === 'users' && 'User Management'}
+            {activeTab === 'topics' && 'Gen Topics'}
+            {activeTab === 'automations' && 'Automations Hub'}
+            {activeTab === 'content' && 'AI Content Library'}
             {activeTab === 'settings' && 'Global Configurations'}
           </div>
           <div className="flex items-center gap-4">
+             {user.role !== 'SUPERADMIN' ? (
+               <span className="px-4 py-1.5 bg-gradient-to-r from-primary/20 to-primary/10 text-primary border border-primary/30 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(124,58,237,0.3)] flex items-center gap-2">
+                 <Building2 className="w-4 h-4" />
+                 {user.company_name || 'Organization Workspace'}
+               </span>
+             ) : (
+               <span className="px-4 py-1.5 bg-gradient-to-r from-danger/20 to-danger/10 text-danger border border-danger/30 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(239,68,68,0.2)] flex items-center gap-2">
+                 <Activity className="w-4 h-4" />
+                 Superadmin Portal
+               </span>
+             )}
             <span className="px-3 py-1 bg-accent/10 border border-accent/20 text-accent rounded-full text-xs font-semibold tracking-wide flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
               {user.role}
@@ -195,6 +248,12 @@ const Dashboard = () => {
 
           {activeTab === 'users' && <UsersManager companyFilter={userFilterCompanyId} onClearFilter={() => setUserFilterCompanyId(null)} />}
 
+          {activeTab === 'topics' && <TopicsManager companyFilter={userFilterCompanyId} onClearFilter={() => setUserFilterCompanyId(null)} />}
+
+          {activeTab === 'automations' && <AutomationsManager />}
+
+          {activeTab === 'content' && <ContentManager />}
+
           {activeTab === 'settings' && <GlobalSettings />}
 
         </div>
@@ -206,6 +265,15 @@ const Dashboard = () => {
           companyName={metricoolModalCompany.name} 
           isModal={true} 
           onClose={() => setMetricoolModalCompany(null)} 
+        />
+      )}
+
+      {iaModalCompany && (
+        <IASettingsManager 
+          companyId={iaModalCompany.id} 
+          companyName={iaModalCompany.name} 
+          isModal={true} 
+          onClose={() => setIaModalCompany(null)} 
         />
       )}
     </div>
