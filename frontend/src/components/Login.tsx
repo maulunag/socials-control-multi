@@ -2,12 +2,24 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Mail, ArrowRight, Activity, ShieldCheck } from 'lucide-react';
 
+const DEV_USERS = [
+  { label: 'Super Admin', email: 'superadmin@tampateks.com', password: 'admin123', role: 'SUPERADMIN' },
+];
+
+const isDev = import.meta.env.DEV || window.location.hostname === 'localhost';
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const fillCredentials = (user: typeof DEV_USERS[0]) => {
+    setEmail(user.email);
+    setPassword(user.password);
+    setError('');
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,6 +142,26 @@ const Login = () => {
                 {loading ? 'Authenticating...' : 'Sign In'}
                 {!loading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
               </button>
+
+              {/* DEV ONLY: Quick fill buttons */}
+              {isDev && (
+                <div className="mt-4 pt-4 border-t border-white/5">
+                  <p className="text-xs text-slate-500 mb-2 text-center font-mono">⚡ Dev autofill</p>
+                  <div className="flex flex-col gap-2">
+                    {DEV_USERS.map((u) => (
+                      <button
+                        key={u.email}
+                        type="button"
+                        onClick={() => fillCredentials(u)}
+                        className="w-full text-left px-3 py-2 rounded-lg bg-white/5 hover:bg-primary/20 border border-white/10 hover:border-primary/40 transition-all group flex items-center justify-between"
+                      >
+                        <span className="text-xs font-medium text-slate-300 group-hover:text-white">{u.label}</span>
+                        <span className="text-xs text-slate-500 font-mono group-hover:text-primary">{u.email}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </form>
           </div>
           
